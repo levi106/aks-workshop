@@ -1,4 +1,5 @@
 #!/bin/bash
+#!/bin/bash
 
 while [[ $# > 0 ]]
 do
@@ -39,16 +40,14 @@ export TF_LOG=INFO
 export TF_LOG_PATH="./terraform.log"
 
 for rg in `cat $resourceGroups`; do
-    echo create $rg resources ...
+    echo delete $rg resources ...
 
-    mkdir ./${rg}
-    cp -pr ./template/* ./${rg}
+    if [ -d ./${rg} ]; then
+        cd ./${rg}
 
-    cd ./${rg}
+        terraform plan -destroy -no-color -out main.destroy.tfplan -var "resource_group_name=${rg}" -var "subscription_id=${subscrption}" -var "tenant_id=${tenant}"
+        terraform apply -no-color main.destroy.tfplan
 
-    terraform init
-    terraform plan -no-color -out main.tfplan -var "resource_group_name=${rg}" -var "subscription_id=${subscrption}" -var "tenant_id=${tenant}"
-    terraform apply -no-color main.tfplan
-
-    cd ..
+        cd ..
+    fi
 done
