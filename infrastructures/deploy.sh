@@ -7,10 +7,6 @@ do
             subscription="$2"
             shift
             ;;
-        -t|--tenant)
-            tenant="$2"
-            shift
-            ;;
         --help|*)
             echo "Usage:"
             echo "   --subscription -s : ID of subscription."
@@ -24,10 +20,6 @@ done
 
 if [ -z "$subscription" ]; then
     echo "No subscription ID supplied"
-    exit 1
-fi
-if [ -z "$tenant" ]; then
-    echo "No tenant ID supplied"
     exit 1
 fi
 
@@ -47,7 +39,7 @@ for rg in `cat $resourceGroups`; do
     cd ./${rg}
 
     terraform init
-    terraform plan -no-color -out main.tfplan -var "resource_group_name=${rg}" -var "subscription_id=${subscrption}" -var "tenant_id=${tenant}"
+    terraform plan -no-color -out main.tfplan -var "resource_group_name=${rg}" -var "subscription_id=${subscrption}"
     terraform apply -no-color main.tfplan
 
     cd ..
